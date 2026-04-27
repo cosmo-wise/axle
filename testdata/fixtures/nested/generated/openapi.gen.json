@@ -1,0 +1,116 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Resource API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/resources": {
+      "get": {
+        "operationId": "ListResources",
+        "responses": {
+          "200": "ListResourcesResponse"
+        },
+        "x-axle-kind": "list",
+        "x-transport-method": "GET",
+        "x-axle-resource": "Resource",
+        "x-axle-request": "ListResourcesRequest",
+        "x-axle-response": "ListResourcesResponse"
+      },
+      "post": {
+        "operationId": "CreateResource",
+        "responses": {
+          "200": "CreateResourceResponse"
+        },
+        "x-axle-kind": "create",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Resource",
+        "x-axle-request": "CreateResourceRequest",
+        "x-axle-response": "CreateResourceResponse"
+      }
+    },
+    "/resources/{id}": {
+      "get": {
+        "operationId": "GetResource",
+        "responses": {
+          "200": "GetResourceResponse"
+        },
+        "x-axle-kind": "get",
+        "x-transport-method": "GET",
+        "x-axle-resource": "Resource",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "GetResourceRequest",
+        "x-axle-response": "GetResourceResponse"
+      }
+    },
+    "/resources/{id}/delete": {
+      "post": {
+        "operationId": "DeleteResource",
+        "responses": {
+          "200": "DeleteResourceResponse"
+        },
+        "x-axle-kind": "delete",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Resource",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "DeleteResourceRequest",
+        "x-axle-response": "DeleteResourceResponse"
+      }
+    },
+    "/resources/{id}/policy/{policy_id}/upgrade": {
+      "post": {
+        "operationId": "UpgradeResourcePolicy",
+        "responses": {
+          "200": "UpgradeResourcePolicyResponse"
+        },
+        "x-axle-kind": "action",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Resource",
+        "x-axle-action": "UpgradeResourcePolicy",
+        "x-axle-path-params": [
+          "id",
+          "policy_id"
+        ],
+        "x-axle-request": "UpgradeResourcePolicyRequest",
+        "x-axle-response": "UpgradeResourcePolicyResponse"
+      }
+    },
+    "/resources/{id}/rename": {
+      "post": {
+        "operationId": "RenameResource",
+        "responses": {
+          "200": "RenameResourceResponse"
+        },
+        "x-axle-kind": "action",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Resource",
+        "x-axle-action": "RenameResource",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "RenameResourceRequest",
+        "x-axle-response": "RenameResourceResponse"
+      }
+    },
+    "/resources/{id}/update": {
+      "post": {
+        "operationId": "UpdateResource",
+        "responses": {
+          "200": "UpdateResourceResponse"
+        },
+        "x-axle-kind": "update",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Resource",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "UpdateResourceRequest",
+        "x-axle-response": "UpdateResourceResponse"
+      }
+    }
+  }
+}

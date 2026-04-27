@@ -1,0 +1,26 @@
+{
+  "schema": "axle.resource.v1",
+  "resource": {
+    "name": "Resource",
+    "path": "resources",
+    "table": "resources",
+    "id": "id",
+    "fields": [
+      {"name": "id", "type": "text", "mutable": false},
+      {"name": "name", "type": "text", "mutable": true},
+      {"name": "policy_id", "type": "text", "mutable": true}
+    ],
+    "operations": [
+      {"name": "ListResources", "kind": "list", "request": "ListResourcesRequest", "response": "ListResourcesResponse", "policy": "resource.read", "handler": "ListResources"},
+      {"name": "GetResource", "kind": "get", "request": "GetResourceRequest", "response": "GetResourceResponse", "policy": "resource.read", "handler": "GetResource"},
+      {"name": "CreateResource", "kind": "create", "request": "CreateResourceRequest", "response": "CreateResourceResponse", "policy": "resource.write", "handler": "CreateResource"},
+      {"name": "UpdateResource", "kind": "update", "request": "UpdateResourceRequest", "response": "UpdateResourceResponse", "policy": "resource.write", "handler": "UpdateResource"},
+      {"name": "DeleteResource", "kind": "delete", "request": "DeleteResourceRequest", "response": "DeleteResourceResponse", "policy": "resource.write", "handler": "DeleteResource"}
+    ],
+    "actions": [
+      {"name": "RenameResource", "kind": "action", "path": "rename", "request": "RenameResourceRequest", "response": "RenameResourceResponse", "policy": "resource.write", "handler": "RenameResource"},
+      {"name": "UpgradeResourcePolicy", "kind": "action", "path": "policy/{policy_id}/upgrade", "request": "UpgradeResourcePolicyRequest", "response": "UpgradeResourcePolicyResponse", "policy": "resource.write", "handler": "UpgradeResourcePolicy"}
+    ]
+  },
+  "generated": {"package": "generated"}
+}

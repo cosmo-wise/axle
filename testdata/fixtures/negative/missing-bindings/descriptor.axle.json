@@ -1,0 +1,20 @@
+{
+  "schema": "axle.resource.v1",
+  "resource": {
+    "name": "Broken",
+    "path": "broken",
+    "table": "broken",
+    "id": "id",
+    "fields": [
+      {"name": "id", "type": "text", "mutable": false}
+    ],
+    "operations": [
+      {"name": "ListBroken", "kind": "list"},
+      {"name": "GetBroken", "kind": "get", "request": "GetBrokenRequest", "response": "GetBrokenResponse", "policy": "broken.read", "handler": "GetBroken"},
+      {"name": "CreateBroken", "kind": "create", "request": "CreateBrokenRequest", "response": "CreateBrokenResponse", "policy": "broken.write", "handler": "CreateBroken"},
+      {"name": "UpdateBroken", "kind": "update", "request": "UpdateBrokenRequest", "response": "UpdateBrokenResponse", "policy": "broken.write", "handler": "UpdateBroken"},
+      {"name": "DeleteBroken", "kind": "delete", "request": "DeleteBrokenRequest", "response": "DeleteBrokenResponse", "policy": "broken.write", "handler": "DeleteBroken"}
+    ]
+  },
+  "generated": {"package": "generated"}
+}
