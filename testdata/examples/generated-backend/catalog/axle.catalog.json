@@ -1,0 +1,7 @@
+{
+  "package": "catalog",
+  "resources": [
+    {"alias": "policies", "import": "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/policies/generated"},
+    {"alias": "resources", "import": "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/resources/generated"}
+  ]
+}

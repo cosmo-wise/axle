@@ -1,0 +1,81 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Policy API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/policies": {
+      "get": {
+        "operationId": "ListPolicies",
+        "responses": {
+          "200": "ListPoliciesResponse"
+        },
+        "x-axle-kind": "list",
+        "x-transport-method": "GET",
+        "x-axle-resource": "Policy",
+        "x-axle-request": "ListPoliciesRequest",
+        "x-axle-response": "ListPoliciesResponse"
+      },
+      "post": {
+        "operationId": "CreatePolicy",
+        "responses": {
+          "200": "CreatePolicyResponse"
+        },
+        "x-axle-kind": "create",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Policy",
+        "x-axle-request": "CreatePolicyRequest",
+        "x-axle-response": "CreatePolicyResponse"
+      }
+    },
+    "/policies/{id}": {
+      "get": {
+        "operationId": "GetPolicy",
+        "responses": {
+          "200": "GetPolicyResponse"
+        },
+        "x-axle-kind": "get",
+        "x-transport-method": "GET",
+        "x-axle-resource": "Policy",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "GetPolicyRequest",
+        "x-axle-response": "GetPolicyResponse"
+      }
+    },
+    "/policies/{id}/delete": {
+      "post": {
+        "operationId": "DeletePolicy",
+        "responses": {
+          "200": "DeletePolicyResponse"
+        },
+        "x-axle-kind": "delete",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Policy",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "DeletePolicyRequest",
+        "x-axle-response": "DeletePolicyResponse"
+      }
+    },
+    "/policies/{id}/update": {
+      "post": {
+        "operationId": "UpdatePolicy",
+        "responses": {
+          "200": "UpdatePolicyResponse"
+        },
+        "x-axle-kind": "update",
+        "x-transport-method": "POST",
+        "x-axle-resource": "Policy",
+        "x-axle-path-params": [
+          "id"
+        ],
+        "x-axle-request": "UpdatePolicyRequest",
+        "x-axle-response": "UpdatePolicyResponse"
+      }
+    }
+  }
+}

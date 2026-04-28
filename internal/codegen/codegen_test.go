@@ -45,6 +45,18 @@ func TestGenerateMatchesGoldenAndDetectsStale(t *testing.T) {
 	if len(genDiagnostics) != 0 {
 		t.Fatalf("unexpected gen diagnostics: %#v", genDiagnostics)
 	}
+	var sawTypes, sawCatalog bool
+	for _, file := range files {
+		if file.Path == "types.gen.go" && strings.Contains(file.Content, "type Resource struct") {
+			sawTypes = true
+		}
+		if file.Path == "registry.gen.go" && strings.Contains(file.Content, "var Catalog = axle.Catalog") {
+			sawCatalog = true
+		}
+	}
+	if !sawTypes || !sawCatalog {
+		t.Fatalf("generated typed edge/catalog missing: types=%t catalog=%t files=%#v", sawTypes, sawCatalog, files)
+	}
 	if diags := codegen.Check("../../testdata/fixtures/single/generated", files); len(diags) != 0 {
 		t.Fatalf("golden output is stale: %#v", diags)
 	}
@@ -62,5 +74,33 @@ func TestGenerateMatchesGoldenAndDetectsStale(t *testing.T) {
 	diags := codegen.Check(tmp, files)
 	if len(diags) != 1 || diags[0].Code != "AXLE_GENERATED_STALE" {
 		t.Fatalf("expected stale diagnostic, got %#v", diags)
+	}
+}
+
+func TestGenerateCatalogCombinesResourcesDeterministically(t *testing.T) {
+	files, diagnostics := codegen.GenerateCatalog(codegen.CatalogDescriptor{
+		Package: "catalog",
+		Resources: []codegen.CatalogResource{
+			{Alias: "resources", ImportPath: "example.com/app/descriptors/resources/generated"},
+			{Alias: "policies", ImportPath: "example.com/app/descriptors/policies/generated"},
+		},
+	})
+	if len(diagnostics) != 0 {
+		t.Fatalf("unexpected diagnostics: %#v", diagnostics)
+	}
+	if len(files) != 1 || files[0].Path != "catalog.gen.go" {
+		t.Fatalf("unexpected catalog files: %#v", files)
+	}
+	policyIndex := strings.Index(files[0].Content, "policies.ResourceRegistry")
+	resourceIndex := strings.Index(files[0].Content, "resources.ResourceRegistry")
+	if policyIndex < 0 || resourceIndex < 0 || policyIndex > resourceIndex {
+		t.Fatalf("catalog order is not deterministic: %s", files[0].Content)
+	}
+	tmp := t.TempDir()
+	if err := codegen.Write(tmp, files); err != nil {
+		t.Fatal(err)
+	}
+	if diags := codegen.Check(tmp, files); len(diags) != 0 {
+		t.Fatalf("fresh catalog reported stale: %#v", diags)
 	}
 }

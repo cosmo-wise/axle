@@ -23,6 +23,10 @@ func Main(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runGen(args[1:], stdout, stderr)
 	case "check":
 		return runCheck(args[1:], stdout, stderr)
+	case "catalog":
+		return runCatalog(args[1:], stdout, stderr)
+	case "app":
+		return runApp(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintln(stdout, "axle 0.1.0")
 		return 0
@@ -107,6 +111,8 @@ func printHelp(out io.Writer) {
 	fmt.Fprintln(out, "axle commands:")
 	fmt.Fprintln(out, "  gen --descriptor <path> --out <dir> [--check] [--json]")
 	fmt.Fprintln(out, "  check --descriptor <path> --root <repo> [--json]")
+	fmt.Fprintln(out, "  catalog gen --manifest <axle.catalog.json> --out <dir> [--check] [--json]")
+	fmt.Fprintln(out, "  app init --out <dir> [--module <module>] [--axle-replace <path>] [--json]")
 	fmt.Fprintln(out, "  version")
 }
 

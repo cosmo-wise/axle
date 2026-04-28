@@ -30,8 +30,9 @@ func Generate(desc axle.Descriptor) ([]GeneratedFile, []axle.Diagnostic) {
 	}
 	packageName := desc.Generated.Package
 	files := []GeneratedFile{
-		{Path: "routes.gen.go", Content: formatGo(renderRoutes(packageName, routes))},
 		{Path: "registry.gen.go", Content: formatGo(renderRegistry(packageName, desc))},
+		{Path: "routes.gen.go", Content: formatGo(renderRoutes(packageName, routes))},
+		{Path: "types.gen.go", Content: formatGo(renderTypes(packageName, desc))},
 		{Path: "openapi.gen.json", Content: openapiJSON},
 		{Path: filepath.ToSlash(filepath.Join("migrations", "001_create_"+desc.Resource.Table+".sql")), Content: renderMigration(desc)},
 	}
@@ -101,10 +102,55 @@ func renderRoutes(packageName string, routes []axle.RouteDescriptor) string {
 }
 
 func renderRegistry(packageName string, desc axle.Descriptor) string {
-	return header + "package " + packageName + "\n\n" +
-		"const ResourceName = \"" + desc.Resource.Name + "\"\n" +
-		"const ResourceTable = \"" + desc.Resource.Table + "\"\n" +
-		"const ResourcePath = \"" + desc.Resource.Path + "\"\n"
+	var b strings.Builder
+	b.WriteString(header)
+	b.WriteString("package " + packageName + "\n\n")
+	b.WriteString("import \"github.com/Fel1xKan/axle/pkg/axle\"\n\n")
+	b.WriteString(fmt.Sprintf("const ResourceName = %q\n", desc.Resource.Name))
+	b.WriteString(fmt.Sprintf("const ResourceTable = %q\n", desc.Resource.Table))
+	b.WriteString(fmt.Sprintf("const ResourcePath = %q\n\n", desc.Resource.Path))
+	b.WriteString("var ResourceDescriptor = axle.ResourceDescriptor{\n")
+	b.WriteString(fmt.Sprintf("\tName: %q,\n", desc.Resource.Name))
+	b.WriteString(fmt.Sprintf("\tPath: %q,\n", desc.Resource.Path))
+	b.WriteString(fmt.Sprintf("\tTable: %q,\n", desc.Resource.Table))
+	b.WriteString(fmt.Sprintf("\tID: %q,\n", desc.Resource.ID))
+	b.WriteString("\tFields: []axle.FieldDescriptor{\n")
+	for _, field := range desc.Resource.Fields {
+		b.WriteString("\t\t{")
+		b.WriteString(fmt.Sprintf("Name: %q, Type: %q, Mutable: %t", field.Name, field.Type, field.Mutable))
+		b.WriteString("},\n")
+	}
+	b.WriteString("\t},\n")
+	b.WriteString("\tOperations: []axle.OperationDescriptor{\n")
+	for _, op := range desc.Resource.Operations {
+		renderOperation(&b, op)
+	}
+	b.WriteString("\t},\n")
+	if len(desc.Resource.Actions) > 0 {
+		b.WriteString("\tActions: []axle.OperationDescriptor{\n")
+		for _, op := range desc.Resource.Actions {
+			renderOperation(&b, op)
+		}
+		b.WriteString("\t},\n")
+	}
+	b.WriteString("}\n\n")
+	b.WriteString("var ResourceRegistry = axle.ResourceRegistry{Resource: ResourceDescriptor, Routes: Routes}\n")
+	b.WriteString("var Catalog = axle.Catalog{Resources: []axle.ResourceRegistry{ResourceRegistry}}\n")
+	return b.String()
+}
+
+func renderOperation(b *strings.Builder, op axle.OperationDescriptor) {
+	b.WriteString("\t\t{\n")
+	b.WriteString(fmt.Sprintf("\t\t\tName: %q,\n", op.Name))
+	b.WriteString(fmt.Sprintf("\t\t\tKind: %q,\n", op.Kind))
+	if op.Path != "" {
+		b.WriteString(fmt.Sprintf("\t\t\tPath: %q,\n", op.Path))
+	}
+	b.WriteString(fmt.Sprintf("\t\t\tRequest: %q,\n", op.Request))
+	b.WriteString(fmt.Sprintf("\t\t\tResponse: %q,\n", op.Response))
+	b.WriteString(fmt.Sprintf("\t\t\tPolicy: %q,\n", op.Policy))
+	b.WriteString(fmt.Sprintf("\t\t\tHandler: %q,\n", op.Handler))
+	b.WriteString("\t\t},\n")
 }
 
 func renderMigration(desc axle.Descriptor) string {

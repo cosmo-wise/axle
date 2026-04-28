@@ -3,6 +3,7 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -11,6 +12,9 @@ import (
 
 	"github.com/Fel1xKan/axle/pkg/axle"
 )
+
+// ErrNotFound is returned when a descriptor-backed row does not exist.
+var ErrNotFound = errors.New("record not found")
 
 // Open opens a concrete SQLite database/sql handle. V1 intentionally supports only SQLite.
 func Open(dsn string) (*sql.DB, error) {
@@ -69,14 +73,21 @@ func (s Store) Get(ctx context.Context, id any) (map[string]any, error) {
 	}
 	defer rows.Close()
 	items, err := scanRows(rows, s.fieldNames())
-	if err != nil || len(items) == 0 {
+	if err != nil {
 		return nil, err
+	}
+	if len(items) == 0 {
+		return nil, ErrNotFound
 	}
 	return items[0], nil
 }
 
 func (s Store) Update(ctx context.Context, id any, values map[string]any) error {
 	keys := sortedKeys(values)
+	if len(keys) == 0 {
+		_, err := s.Get(ctx, id)
+		return err
+	}
 	sets := make([]string, len(keys))
 	args := make([]any, 0, len(keys)+1)
 	for i, key := range keys {
@@ -84,13 +95,33 @@ func (s Store) Update(ctx context.Context, id any, values map[string]any) error 
 		args = append(args, values[key])
 	}
 	args = append(args, id)
-	_, err := s.db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET %s WHERE %s = ?", s.resource.Table, strings.Join(sets, ", "), s.resource.ID), args...)
-	return err
+	result, err := s.db.ExecContext(ctx, fmt.Sprintf("UPDATE %s SET %s WHERE %s = ?", s.resource.Table, strings.Join(sets, ", "), s.resource.ID), args...)
+	if err != nil {
+		return err
+	}
+	changed, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if changed == 0 {
+		return ErrNotFound
+	}
+	return nil
 }
 
 func (s Store) Delete(ctx context.Context, id any) error {
-	_, err := s.db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE %s = ?", s.resource.Table, s.resource.ID), id)
-	return err
+	result, err := s.db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE %s = ?", s.resource.Table, s.resource.ID), id)
+	if err != nil {
+		return err
+	}
+	changed, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if changed == 0 {
+		return ErrNotFound
+	}
+	return nil
 }
 
 func (s Store) fieldNames() []string {

@@ -54,6 +54,27 @@ type RouteDescriptor struct {
 	Handler         string   `json:"handler"`
 }
 
+// ResourceRegistry is the generated contract consumed by Axle runtime mounts.
+// It is intentionally metadata-only: runtime packages own HTTP and SQLite behavior.
+type ResourceRegistry struct {
+	Resource ResourceDescriptor `json:"resource"`
+	Routes   []RouteDescriptor  `json:"routes"`
+}
+
+// Catalog is a deterministic multi-resource registry generated or assembled by Axle.
+type Catalog struct {
+	Resources []ResourceRegistry `json:"resources"`
+}
+
+// Routes returns all catalog routes in registry order.
+func (c Catalog) Routes() []RouteDescriptor {
+	var routes []RouteDescriptor
+	for _, resource := range c.Resources {
+		routes = append(routes, resource.Routes...)
+	}
+	return routes
+}
+
 // Diagnostic is the stable machine-readable repair contract for Axle checks.
 type Diagnostic struct {
 	Code         string `json:"code"`

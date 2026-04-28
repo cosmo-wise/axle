@@ -29,6 +29,7 @@ func Run(descriptorPath, root string) axle.CheckResult {
 	}
 	if root != "" {
 		diagnostics = append(diagnostics, scanArchitecture(root)...)
+		diagnostics = append(diagnostics, scanCatalogs(root)...)
 	}
 	sort.SliceStable(diagnostics, func(i, j int) bool {
 		return diagnostics[i].Code+diagnostics[i].Path < diagnostics[j].Code+diagnostics[j].Path
@@ -58,7 +59,7 @@ func scanArchitecture(root string) []axle.Diagnostic {
 			}
 			return nil
 		}
-		if filepath.Ext(path) != ".go" || strings.HasSuffix(path, ".gen.go") {
+		if filepath.Ext(path) != ".go" || strings.HasSuffix(path, ".gen.go") || strings.HasSuffix(path, "_test.go") {
 			return nil
 		}
 		rel := filepath.ToSlash(path)
@@ -88,8 +89,17 @@ func scanGoFile(path string, rel string) []axle.Diagnostic {
 	if strings.HasPrefix(rel, "pkg/axle/") && importsAppOrFixture(imports) {
 		diagnostics = append(diagnostics, axle.Diagnostic{Code: "AXLE_PUBLIC_IMPORT_INTERNAL", Path: rel, Message: "public Axle API imports app or fixture internals", SuggestedFix: "Keep pkg/axle limited to stable generated-code contracts."})
 	}
+	if isRootAxlePublicFile(rel) && (hasForbiddenRootAPIImport(imports) || declaresForbiddenRootAPIType(file)) {
+		diagnostics = append(diagnostics, axle.Diagnostic{Code: "AXLE_PUBLIC_API_BLOAT", Path: rel, Message: "root pkg/axle must stay metadata-only", SuggestedFix: "Move HTTP, SQLite, or SQL behavior into narrow subpackages such as pkg/axle/runtime or pkg/axle/sqlite."})
+	}
 	if declaresMultiDBAbstraction(file) {
 		diagnostics = append(diagnostics, axle.Diagnostic{Code: "AXLE_MULTIDB_ABSTRACTION", Path: rel, Message: "V1 must not introduce a generic multi-database abstraction", SuggestedFix: "Use concrete SQLite support only in V1."})
+	}
+	if declaresTypedORM(file) {
+		diagnostics = append(diagnostics, axle.Diagnostic{Code: "AXLE_TYPED_ORM_CREEP", Path: rel, Message: "typed repositories or query builders are outside Axle V1", SuggestedFix: "Keep persistence behind the concrete SQLite CRUD facade and generated DTO edge."})
+	}
+	if declaresManualCRUDRouting(file, imports) {
+		diagnostics = append(diagnostics, axle.Diagnostic{Code: "AXLE_MANUAL_CRUD_ROUTING", Path: rel, Message: "manual standard CRUD route switches duplicate generated Axle routes", SuggestedFix: "Mount generated Catalog with pkg/axle/runtime and implement only custom action handlers."})
 	}
 	if hasImport(imports, "reflect") || runtimeWalkDiscovery(lower, file) {
 		diagnostics = append(diagnostics, axle.Diagnostic{Code: "AXLE_RUNTIME_DISCOVERY", Path: rel, Message: "runtime discovery or reflection registration is not allowed in V1", SuggestedFix: "Use descriptor-driven generated registrations."})
@@ -123,6 +133,40 @@ func hasImportSuffix(imports []string, suffix string) bool {
 	return false
 }
 
+func isRootAxlePublicFile(rel string) bool {
+	if !strings.HasPrefix(rel, "pkg/axle/") {
+		return false
+	}
+	rest := strings.TrimPrefix(rel, "pkg/axle/")
+	return !strings.Contains(rest, "/")
+}
+
+func declaresForbiddenRootAPIType(file *ast.File) bool {
+	forbidden := map[string]bool{
+		"Record": true, "Store": true, "Repository": true, "QueryBuilder": true,
+		"Server": true, "Router": true, "Handler": true,
+		"Database": true, "DB": true, "DatabaseDriver": true, "Dialect": true, "DialectPlugin": true,
+	}
+	found := false
+	ast.Inspect(file, func(node ast.Node) bool {
+		typeSpec, ok := node.(*ast.TypeSpec)
+		if ok && forbidden[typeSpec.Name.Name] {
+			found = true
+		}
+		return !found
+	})
+	return found
+}
+
+func hasForbiddenRootAPIImport(imports []string) bool {
+	for _, path := range imports {
+		if path == "net/http" || path == "database/sql" || strings.HasSuffix(path, "/pkg/axle/runtime") || strings.HasSuffix(path, "/pkg/axle/sqlite") {
+			return true
+		}
+	}
+	return false
+}
+
 func importsAppOrFixture(imports []string) bool {
 	for _, path := range imports {
 		if strings.Contains(path, "testdata") || strings.Contains(path, "/fixtures") || strings.Contains(path, "/app/") {
@@ -137,11 +181,11 @@ func declaresMultiDBAbstraction(file *ast.File) bool {
 	ast.Inspect(file, func(node ast.Node) bool {
 		switch item := node.(type) {
 		case *ast.TypeSpec:
-			if item.Name.Name == "DatabaseDriver" || item.Name.Name == "DialectPlugin" {
+			if item.Name.Name == "DatabaseDriver" || item.Name.Name == "DialectPlugin" || item.Name.Name == "Dialect" {
 				found = true
 			}
 		case *ast.FuncDecl:
-			if item.Name.Name == "RegisterDialect" {
+			if item.Name.Name == "RegisterDialect" || item.Name.Name == "RegisterDriver" {
 				found = true
 			}
 		}

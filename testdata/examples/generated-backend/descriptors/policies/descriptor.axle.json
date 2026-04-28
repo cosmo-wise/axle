@@ -1,0 +1,22 @@
+{
+  "schema": "axle.resource.v1",
+  "resource": {
+    "name": "Policy",
+    "path": "policies",
+    "table": "policies",
+    "id": "id",
+    "fields": [
+      {"name": "id", "type": "text", "mutable": false},
+      {"name": "name", "type": "text", "mutable": true},
+      {"name": "level", "type": "integer", "mutable": true}
+    ],
+    "operations": [
+      {"name": "ListPolicies", "kind": "list", "request": "ListPoliciesRequest", "response": "ListPoliciesResponse", "policy": "policy.read", "handler": "ListPolicies"},
+      {"name": "GetPolicy", "kind": "get", "request": "GetPolicyRequest", "response": "GetPolicyResponse", "policy": "policy.read", "handler": "GetPolicy"},
+      {"name": "CreatePolicy", "kind": "create", "request": "CreatePolicyRequest", "response": "CreatePolicyResponse", "policy": "policy.write", "handler": "CreatePolicy"},
+      {"name": "UpdatePolicy", "kind": "update", "request": "UpdatePolicyRequest", "response": "UpdatePolicyResponse", "policy": "policy.write", "handler": "UpdatePolicy"},
+      {"name": "DeletePolicy", "kind": "delete", "request": "DeletePolicyRequest", "response": "DeletePolicyResponse", "policy": "policy.write", "handler": "DeletePolicy"}
+    ]
+  },
+  "generated": {"package": "generated"}
+}
