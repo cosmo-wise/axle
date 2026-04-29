@@ -6,15 +6,16 @@ small Go/SQLite CRUD backend without inventing router/store glue.
 ## 1. Scaffold first, then replace sample resources
 
 ```bash
-go run ./cmd/axle app init --out <backend-dir> --module <module> --axle-replace <path-to-axle> --json
+go run ./cmd/axle app init --out <backend-dir> --module <module> --axle-replace <path-to-axle> --descriptors-dir <descriptor-dir> --json
 cd <backend-dir>
 ./scripts/verify.sh
 ```
 
-`app init` intentionally creates a verified example backend with sample
-`resources` and `policies`. It does not infer business resources from a
-frontend. For a real project, replace the sample descriptors with project
-descriptors and regenerate.
+`app init --descriptors-dir` creates a verified backend from existing
+descriptors. Without `--descriptors-dir`, `app init` uses sample `resources`
+and `policies`; it does not infer business resources from a frontend. For a
+real project, replace or seed descriptors with project resources and
+regenerate.
 
 ## 2. Extract only stable resource facts
 
@@ -103,8 +104,9 @@ Do not write:
 
 ## 6. Defaults and IDs
 
-Axle does not generate IDs, timestamps, slugs, or default values. Put those in
-client payloads, seed data, tests, or custom action code.
+Axle generates only descriptor-declared values such as text fields with
+`auto: "uuid"`. Put timestamps, slugs, arbitrary defaults, and undeclared IDs
+in client payloads, seed data, tests, or custom action code.
 
 Create/update accepts either a bare JSON object or `{"data": {...}}`.
 Update/delete keep semantic CRUD kinds but use POST transport:

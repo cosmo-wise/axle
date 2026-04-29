@@ -15,20 +15,21 @@ memory:
   skills:
     - name: axle-crud-backend
       description: Scaffold and adapt LLM-friendly Go/SQLite CRUD backends with Axle.
-      usage: Run axle app init, replace sample descriptors, regenerate descriptor/catalog output, bind only custom actions, then run scripts/verify.sh and axle check --root .
+      usage: Run axle app init --descriptors-dir when descriptors already exist, add resources/actions incrementally with axle app add-resource/add-action, bind only custom actions, then run scripts/verify.sh, axle check --root ., and axle doctor --json.
 ```
 
 ## Generator contract
 
 For an Axle backend sprint, the Generator should:
 
-1. Run `axle app init` or `go run <path-to-axle>/cmd/axle app init`.
-2. Replace sample descriptors with project resources.
+1. Run `axle app init --descriptors-dir <descriptor-dir>` or `go run <path-to-axle>/cmd/axle app init --descriptors-dir <descriptor-dir>`.
+2. Add later resources/actions with `axle app add-resource` and `axle app add-action`.
 3. Run `axle gen` for edited descriptors.
 4. Run `axle catalog gen` after catalog manifest edits.
 5. Run `axle check --root <backend-dir> --json`.
-6. Run `<backend-dir>/scripts/verify.sh`.
-7. Return Harness `verificationEvidence.commands` entries for every command above.
+6. Run `axle doctor --json` for CLI/runtime readiness.
+7. Run `<backend-dir>/scripts/verify.sh`.
+8. Return Harness `verificationEvidence.commands` entries for every command above.
 
 ## Boundaries
 

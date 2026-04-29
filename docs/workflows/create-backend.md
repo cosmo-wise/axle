@@ -3,7 +3,7 @@
 Use this when an LLM needs a complete Go/SQLite backend skeleton without inventing router/store glue.
 
 ```bash
-go run ./cmd/axle app init --out <backend-dir> --module <module> --axle-replace <path-to-axle> --json
+go run ./cmd/axle app init --out <backend-dir> --module <module> --axle-replace <path-to-axle> --descriptors-dir <descriptor-dir> --json
 cd <backend-dir>
 ./scripts/verify.sh
 ```
@@ -34,7 +34,7 @@ split. For a project-adaptation checklist, see `adapt-existing-project.md`.
 
 - CRUD create/update accept a bare JSON object or `{"data": {...}}`.
 - Actions receive `request.ID`, `request.Params`, and `request.Body`.
-- Axle does not generate IDs, timestamps, slugs, or default values; app code, seed data, tests, or clients must provide them.
+- Axle only generates descriptor-declared values, currently text fields with `auto: "uuid"`; timestamps, slugs, arbitrary defaults, and undeclared IDs remain app/client responsibilities.
 - All writes use POST transport. Update/delete keep semantic route names: `POST /resources/{id}/update`, `POST /resources/{id}/delete`.
 
 ## Hand-written code boundary

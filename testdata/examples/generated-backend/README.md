@@ -34,5 +34,4 @@ Do not handwrite standard CRUD routers, repositories, query builders, generic DB
 - Creates and custom actions use `POST /resources` and `POST /resources/{id}/action`.
 - Updates and deletes keep semantic kinds but use `POST /resources/{id}/update` and `POST /resources/{id}/delete`.
 - Create/update accept a bare JSON object or `{"data": {...}}`.
-- Axle does not auto-generate IDs, timestamps, slugs, or default values.
-
+- Axle auto-generates only descriptor-declared values such as text fields with `auto: "uuid"`; timestamps, slugs, and arbitrary defaults remain app/client responsibilities unless the descriptor explicitly adds support.
