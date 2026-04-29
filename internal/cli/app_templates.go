@@ -12,17 +12,25 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 AXLE=${AXLE:-"go run github.com/Fel1xKan/axle/cmd/axle"}
+mapfile -t DESCRIPTORS < <(find descriptors -mindepth 2 -maxdepth 2 -name descriptor.axle.json | sort)
+if [ "${#DESCRIPTORS[@]}" -lt 1 ]; then
+  echo "expected at least one Axle descriptor" >&2
+  exit 1
+fi
+go mod tidy
 
-# Regenerate before Go module resolution so renamed resources/imports do not
-# strand go mod tidy on stale generated packages.
-$AXLE gen --descriptor descriptors/resources/descriptor.axle.json --out descriptors/resources/generated --json
-$AXLE gen --descriptor descriptors/policies/descriptor.axle.json --out descriptors/policies/generated --json
+for descriptor in "${DESCRIPTORS[@]}"; do
+  out_dir="$(dirname "$descriptor")/generated"
+  $AXLE gen --descriptor "$descriptor" --out "$out_dir" --json
+done
 $AXLE catalog gen --manifest catalog/axle.catalog.json --out catalog --json
 
 go mod tidy
 
-$AXLE gen --descriptor descriptors/resources/descriptor.axle.json --out descriptors/resources/generated --check --json
-$AXLE gen --descriptor descriptors/policies/descriptor.axle.json --out descriptors/policies/generated --check --json
+for descriptor in "${DESCRIPTORS[@]}"; do
+  out_dir="$(dirname "$descriptor")/generated"
+  $AXLE gen --descriptor "$descriptor" --out "$out_dir" --check --json
+done
 $AXLE catalog gen --manifest catalog/axle.catalog.json --out catalog --check --json
 $AXLE check --root . --json
 go test ./...
@@ -102,7 +110,7 @@ Do not handwrite standard CRUD routers, repositories, query builders, generic DB
 - Creates and custom actions use %[21]s.
 - Updates and deletes keep semantic kinds but use %[22]s and %[23]s.
 - Create/update accept a bare JSON object or %[24]s.
-- Axle does not auto-generate IDs, timestamps, slugs, or default values.
+- Axle can auto-generate descriptor fields marked auto=uuid; timestamps/slugs/default policies remain descriptor-owned unless declared explicitly.
 
 `, moduleName,
 		"`descriptors/<resource>/generated`",

@@ -18,7 +18,7 @@ func TestOpenAPIExtensionsPreserveSemantics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"\"x-axle-kind\": \"delete\"", "\"x-transport-method\": \"POST\"", "\"x-axle-action\": \"UpgradeResourcePolicy\"", "/resources/{id}/policy/{policy_id}/upgrade"} {
+	for _, want := range []string{"\"x-axle-kind\": \"delete\"", "\"x-transport-method\": \"POST\"", "\"x-axle-action\": \"UpgradeResourcePolicy\"", "/resources/{id}/policy/{policy_id}/upgrade", "\"components\"", "\"$ref\": \"#/components/schemas/Resource\"", "\"requestBody\"", "\"parameters\""} {
 		if !strings.Contains(doc, want) {
 			t.Fatalf("OpenAPI missing %s in:\n%s", want, doc)
 		}

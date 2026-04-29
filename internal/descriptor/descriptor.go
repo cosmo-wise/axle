@@ -45,6 +45,8 @@ func Validate(desc axle.Descriptor, sourcePath string) []axle.Diagnostic {
 	}
 	if strings.TrimSpace(res.Table) == "" {
 		add("AXLE_RESOURCE_TABLE", sourcePath+"#/resource/table", "resource table is required", "Set resource.table to the SQLite table name.")
+	} else if !identRE.MatchString(res.Table) {
+		add("AXLE_RESOURCE_TABLE_IDENTIFIER", sourcePath+"#/resource/table", "resource table must be a safe SQLite identifier", "Use letters, numbers, and underscores, starting with a letter.")
 	}
 	if strings.TrimSpace(res.ID) == "" {
 		add("AXLE_RESOURCE_ID", sourcePath+"#/resource/id", "resource id field is required", "Set resource.id to the primary key field name.")
@@ -57,9 +59,29 @@ func Validate(desc axle.Descriptor, sourcePath string) []axle.Diagnostic {
 		path := fmt.Sprintf("%s#/resource/fields/%d", sourcePath, i)
 		if strings.TrimSpace(field.Name) == "" {
 			add("AXLE_FIELD_NAME", path+"/name", "field name is required", "Give every field a stable name.")
+		} else if !identRE.MatchString(field.Name) {
+			add("AXLE_FIELD_IDENTIFIER", path+"/name", "field name must be a safe SQLite identifier", "Use letters, numbers, and underscores, starting with a letter.")
 		}
-		if strings.TrimSpace(field.Type) == "" {
+		switch strings.TrimSpace(field.Type) {
+		case "text", "integer", "boolean", "real":
+		case "":
 			add("AXLE_FIELD_TYPE", path+"/type", "field type is required", "Use one of text, integer, boolean, or real.")
+		default:
+			add("AXLE_FIELD_TYPE", path+"/type", "field type is unsupported", "Use one of text, integer, boolean, or real.")
+		}
+		if strings.TrimSpace(field.Auto) != "" && field.Auto != "uuid" {
+			add("AXLE_FIELD_AUTO", path+"/auto", "field auto value is unsupported", "Use auto: uuid or omit auto generation.")
+		}
+		if field.References != nil {
+			if strings.TrimSpace(field.References.Table) == "" || !identRE.MatchString(field.References.Table) {
+				add("AXLE_FIELD_REFERENCE_TABLE", path+"/references/table", "reference table must be a safe SQLite identifier", "Set references.table to the target table name.")
+			}
+			if strings.TrimSpace(field.References.Field) != "" && !identRE.MatchString(field.References.Field) {
+				add("AXLE_FIELD_REFERENCE_FIELD", path+"/references/field", "reference field must be a safe SQLite identifier", "Use a target field such as id.")
+			}
+		}
+		if fieldNames[field.Name] {
+			add("AXLE_FIELD_DUPLICATE", path+"/name", "field name is duplicated", "Use unique persisted field names.")
 		}
 		fieldNames[field.Name] = true
 	}

@@ -31,3 +31,42 @@ func TestLoadValidFixture(t *testing.T) {
 		t.Fatalf("unexpected descriptor: %#v", desc.Resource)
 	}
 }
+
+func TestValidateRejectsUnsafeIdentifiersAndUnknownFieldMetadata(t *testing.T) {
+	desc := axle.Descriptor{
+		Schema: descriptor.SchemaV1,
+		Resource: axle.ResourceDescriptor{
+			Name:  "Broken",
+			Path:  "broken",
+			Table: "broken;drop",
+			ID:    "id",
+			Fields: []axle.FieldDescriptor{
+				{Name: "id", Type: "text"},
+				{Name: "bad-name", Type: "json", Auto: "slug"},
+				{Name: "owner_id", Type: "text", References: &axle.ReferenceDescriptor{Table: "users;drop", Field: "id"}},
+			},
+			Operations: validOps(),
+		},
+		Generated: axle.GeneratedTarget{Package: "generated"},
+	}
+	diagnostics := descriptor.Validate(desc, "broken.json")
+	codes := make([]string, 0, len(diagnostics))
+	for _, diagnostic := range diagnostics {
+		codes = append(codes, diagnostic.Code)
+	}
+	for _, want := range []string{"AXLE_RESOURCE_TABLE_IDENTIFIER", "AXLE_FIELD_IDENTIFIER", "AXLE_FIELD_TYPE", "AXLE_FIELD_AUTO", "AXLE_FIELD_REFERENCE_TABLE"} {
+		if !slices.Contains(codes, want) {
+			t.Fatalf("missing diagnostic %s in %#v", want, codes)
+		}
+	}
+}
+
+func validOps() []axle.OperationDescriptor {
+	return []axle.OperationDescriptor{
+		{Name: "ListBroken", Kind: "list", Request: "ListBrokenRequest", Response: "ListBrokenResponse", Policy: "list", Handler: "ListBroken"},
+		{Name: "GetBroken", Kind: "get", Request: "GetBrokenRequest", Response: "GetBrokenResponse", Policy: "get", Handler: "GetBroken"},
+		{Name: "CreateBroken", Kind: "create", Request: "CreateBrokenRequest", Response: "CreateBrokenResponse", Policy: "create", Handler: "CreateBroken"},
+		{Name: "UpdateBroken", Kind: "update", Request: "UpdateBrokenRequest", Response: "UpdateBrokenResponse", Policy: "update", Handler: "UpdateBroken"},
+		{Name: "DeleteBroken", Kind: "delete", Request: "DeleteBrokenRequest", Response: "DeleteBrokenResponse", Policy: "delete", Handler: "DeleteBroken"},
+	}
+}

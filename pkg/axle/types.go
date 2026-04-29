@@ -25,9 +25,23 @@ type ResourceDescriptor struct {
 
 // FieldDescriptor defines a persisted resource field.
 type FieldDescriptor struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Mutable bool   `json:"mutable"`
+	Name       string               `json:"name"`
+	Type       string               `json:"type"`
+	Mutable    bool                 `json:"mutable"`
+	Nullable   *bool                `json:"nullable,omitempty"`
+	Unique     bool                 `json:"unique,omitempty"`
+	Index      bool                 `json:"index,omitempty"`
+	Auto       string               `json:"auto,omitempty"`
+	Default    string               `json:"default,omitempty"`
+	References *ReferenceDescriptor `json:"references,omitempty"`
+}
+
+// ReferenceDescriptor declares a SQLite foreign-key reference for a field.
+type ReferenceDescriptor struct {
+	Resource string `json:"resource,omitempty"`
+	Table    string `json:"table"`
+	Field    string `json:"field,omitempty"`
+	OnDelete string `json:"on_delete,omitempty"`
 }
 
 // OperationDescriptor defines CRUD or action behavior.

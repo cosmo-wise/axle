@@ -9,7 +9,22 @@
       "get": {
         "operationId": "ListResources",
         "responses": {
-          "200": "ListResourcesResponse"
+          "200": {
+            "description": "ListResourcesResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
         },
         "x-axle-kind": "list",
         "x-transport-method": "GET",
@@ -19,8 +34,33 @@
       },
       "post": {
         "operationId": "CreateResource",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Resource"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": "CreateResourceResponse"
+          "200": {
+            "description": "CreateResourceResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
         },
         "x-axle-kind": "create",
         "x-transport-method": "POST",
@@ -32,8 +72,33 @@
     "/resources/{id}": {
       "get": {
         "operationId": "GetResource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "200": "GetResourceResponse"
+          "200": {
+            "description": "GetResourceResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
         },
         "x-axle-kind": "get",
         "x-transport-method": "GET",
@@ -48,8 +113,33 @@
     "/resources/{id}/delete": {
       "post": {
         "operationId": "DeleteResource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "200": "DeleteResourceResponse"
+          "200": {
+            "description": "DeleteResourceResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
         },
         "x-axle-kind": "delete",
         "x-transport-method": "POST",
@@ -64,8 +154,43 @@
     "/resources/{id}/update": {
       "post": {
         "operationId": "UpdateResource",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Resource"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": "UpdateResourceResponse"
+          "200": {
+            "description": "UpdateResourceResponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
         },
         "x-axle-kind": "update",
         "x-transport-method": "POST",
@@ -75,6 +200,57 @@
         ],
         "x-axle-request": "UpdateResourceRequest",
         "x-axle-response": "UpdateResourceResponse"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ResourceListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Resource"
+            }
+          }
+        }
+      },
+      "ResourceResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Resource"
+          }
+        }
       }
     }
   }

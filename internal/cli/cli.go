@@ -27,6 +27,8 @@ func Main(args []string, stdout io.Writer, stderr io.Writer) int {
 		return runCatalog(args[1:], stdout, stderr)
 	case "app":
 		return runApp(args[1:], stdout, stderr)
+	case "doctor":
+		return runDoctorCommand(args[1:], stdout, stderr)
 	case "version":
 		fmt.Fprintln(stdout, "axle 0.1.0")
 		return 0
@@ -79,6 +81,16 @@ func runCheck(args []string, stdout io.Writer, stderr io.Writer) int {
 	return renderCheckResult(stdout, stderr, *jsonOut, result)
 }
 
+func runDoctorCommand(args []string, stdout io.Writer, stderr io.Writer) int {
+	fs := flag.NewFlagSet("doctor", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	jsonOut := fs.Bool("json", false, "Render JSON result")
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	return runDoctor(stdout, stderr, *jsonOut)
+}
+
 func renderResult(stdout io.Writer, stderr io.Writer, jsonOut bool, diagnostics []axle.Diagnostic) int {
 	status := "ok"
 	if len(diagnostics) > 0 {
@@ -112,7 +124,10 @@ func printHelp(out io.Writer) {
 	fmt.Fprintln(out, "  gen --descriptor <path> --out <dir> [--check] [--json]")
 	fmt.Fprintln(out, "  check --descriptor <path> --root <repo> [--json]")
 	fmt.Fprintln(out, "  catalog gen --manifest <axle.catalog.json> --out <dir> [--check] [--json]")
-	fmt.Fprintln(out, "  app init --out <dir> [--module <module>] [--axle-replace <path>] [--json]")
+	fmt.Fprintln(out, "  app init --out <dir> [--module <module>] [--axle-replace <path>] [--descriptors-dir <dir>] [--json]")
+	fmt.Fprintln(out, "  app add-resource --out <dir> --descriptor <descriptor.axle.json> [--module <module>] [--json]")
+	fmt.Fprintln(out, "  app add-action --descriptor <descriptor.axle.json> --name <Name> --path <path> --request <Req> --response <Resp> --policy <policy> --handler <Handler> [--json]")
+	fmt.Fprintln(out, "  doctor [--json]")
 	fmt.Fprintln(out, "  version")
 }
 

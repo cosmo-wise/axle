@@ -8,6 +8,7 @@ import (
 
 	"github.com/Fel1xKan/axle/internal/codegen"
 	"github.com/Fel1xKan/axle/internal/descriptor"
+	"github.com/Fel1xKan/axle/pkg/axle"
 )
 
 func TestRoutesPreserveSemanticsAndNestedParams(t *testing.T) {
@@ -102,5 +103,55 @@ func TestGenerateCatalogCombinesResourcesDeterministically(t *testing.T) {
 	}
 	if diags := codegen.Check(tmp, files); len(diags) != 0 {
 		t.Fatalf("fresh catalog reported stale: %#v", diags)
+	}
+}
+
+func TestGeneratePreservesSchemaMetadataInRegistryAndMigration(t *testing.T) {
+	notNullable := false
+	desc := axle.Descriptor{
+		Schema: descriptor.SchemaV1,
+		Resource: axle.ResourceDescriptor{
+			Name:  "Widget",
+			Path:  "widgets",
+			Table: "widgets",
+			ID:    "id",
+			Fields: []axle.FieldDescriptor{
+				{Name: "id", Type: "text", Auto: "uuid"},
+				{Name: "owner_id", Type: "text", Mutable: true, Nullable: &notNullable, Index: true, References: &axle.ReferenceDescriptor{Resource: "User", Table: "users", Field: "id", OnDelete: "cascade"}},
+				{Name: "slug", Type: "text", Mutable: true, Unique: true, Default: "'new'"},
+			},
+			Operations: []axle.OperationDescriptor{
+				{Name: "ListWidgets", Kind: "list", Request: "ListWidgetsRequest", Response: "ListWidgetsResponse", Policy: "list", Handler: "ListWidgets"},
+				{Name: "GetWidget", Kind: "get", Request: "GetWidgetRequest", Response: "GetWidgetResponse", Policy: "get", Handler: "GetWidget"},
+				{Name: "CreateWidget", Kind: "create", Request: "CreateWidgetRequest", Response: "CreateWidgetResponse", Policy: "create", Handler: "CreateWidget"},
+				{Name: "UpdateWidget", Kind: "update", Request: "UpdateWidgetRequest", Response: "UpdateWidgetResponse", Policy: "update", Handler: "UpdateWidget"},
+				{Name: "DeleteWidget", Kind: "delete", Request: "DeleteWidgetRequest", Response: "DeleteWidgetResponse", Policy: "delete", Handler: "DeleteWidget"},
+			},
+		},
+		Generated: axle.GeneratedTarget{Package: "generated"},
+	}
+	files, diagnostics := codegen.Generate(desc)
+	if len(diagnostics) != 0 {
+		t.Fatalf("unexpected diagnostics: %#v", diagnostics)
+	}
+	var registry string
+	var migration string
+	for _, file := range files {
+		if file.Path == "registry.gen.go" {
+			registry = file.Content
+		}
+		if strings.HasPrefix(file.Path, "migrations/") {
+			migration = file.Content
+		}
+	}
+	for _, want := range []string{"Nullable: boolPtr(false)", "Index: true", "Unique: true", "Auto: \"uuid\"", "Default: \"'new'\"", "References: &axle.ReferenceDescriptor{Resource: \"User\", Table: \"users\", Field: \"id\", OnDelete: \"cascade\"}"} {
+		if !strings.Contains(registry, want) {
+			t.Fatalf("registry missing %s in:\n%s", want, registry)
+		}
+	}
+	for _, want := range []string{"CREATE TABLE IF NOT EXISTS \"widgets\"", "\"owner_id\" TEXT NOT NULL REFERENCES \"users\"(\"id\") ON DELETE CASCADE", "\"slug\" TEXT UNIQUE DEFAULT 'new'", "CREATE INDEX IF NOT EXISTS \"idx_widgets_owner_id\" ON \"widgets\" (\"owner_id\")"} {
+		if !strings.Contains(migration, want) {
+			t.Fatalf("migration missing %s in:\n%s", want, migration)
+		}
 	}
 }
