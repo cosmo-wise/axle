@@ -81,6 +81,13 @@ func TestCLIAppInitGeneratedBackendE2E(t *testing.T) {
 	if !strings.Contains(string(output), "ok") {
 		t.Fatalf("expected generated backend tests to run, got: %s", output)
 	}
+	mainGo, err := os.ReadFile(filepath.Join(out, "cmd", "example-backend", "main.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(mainGo), `os.Getenv("PORT")`) || !strings.Contains(string(mainGo), `ListenAndServe(":"+port`) {
+		t.Fatalf("generated backend should allow run-scoped PORT override:\n%s", mainGo)
+	}
 }
 
 func TestCLICatalogGenCheck(t *testing.T) {

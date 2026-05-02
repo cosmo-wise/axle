@@ -68,7 +68,11 @@ func main() {
 	if err := db.Migrate(ctx); err != nil {
 		log.Fatal(err)
 	}
-	log.Fatal(http.ListenAndServe(":8080", app.New(db)))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Fatal(http.ListenAndServe(":"+port, app.New(db)))
 }
 `, moduleName, moduleName)
 }
