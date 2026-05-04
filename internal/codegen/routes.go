@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 var routeParamRE = regexp.MustCompile(`\{([A-Za-z_][A-Za-z0-9_]*)\}`)

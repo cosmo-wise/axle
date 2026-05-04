@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	"github.com/cosmo-wise/axle/pkg/axle"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 // EdgeOptions configures Axle's optional application edge wrapper.

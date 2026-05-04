@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 func TestValidateRejectsMissingSchemaAndBindings(t *testing.T) {

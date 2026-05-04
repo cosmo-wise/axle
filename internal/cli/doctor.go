@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"strings"
 
-	internalsqlite "github.com/Fel1xKan/axle/internal/sqlite"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	internalsqlite "github.com/cosmo-wise/axle/internal/sqlite"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 func runDoctor(stdout io.Writer, stderr io.Writer, jsonOut bool) int {

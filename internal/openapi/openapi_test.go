@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/internal/openapi"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/internal/openapi"
 )
 
 func TestOpenAPIExtensionsPreserveSemantics(t *testing.T) {

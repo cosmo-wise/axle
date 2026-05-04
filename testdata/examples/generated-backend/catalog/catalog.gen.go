@@ -2,9 +2,9 @@
 package catalog
 
 import (
-	"github.com/Fel1xKan/axle/pkg/axle"
-	policies "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/policies/generated"
-	resources "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/resources/generated"
+	"github.com/cosmo-wise/axle/pkg/axle"
+	policies "github.com/cosmo-wise/axle/testdata/examples/generated-backend/descriptors/policies/generated"
+	resources "github.com/cosmo-wise/axle/testdata/examples/generated-backend/descriptors/resources/generated"
 )
 
 var Catalog = axle.Catalog{Resources: []axle.ResourceRegistry{

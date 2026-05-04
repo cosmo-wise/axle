@@ -9,9 +9,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 // Run executes descriptor, generated, and architecture checks.

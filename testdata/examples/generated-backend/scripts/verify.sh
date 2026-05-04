@@ -2,7 +2,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-AXLE=${AXLE:-"go run github.com/Fel1xKan/axle/cmd/axle"}
+AXLE=${AXLE:-"go run github.com/cosmo-wise/axle/cmd/axle"}
 
 # Regenerate before Go module resolution so renamed resources/imports do not
 # strand go mod tidy on stale generated packages.

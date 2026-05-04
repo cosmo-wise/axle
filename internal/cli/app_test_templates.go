@@ -15,7 +15,7 @@ import (
 
 	appcatalog "%s/catalog"
 	"%s/internal/app"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 func TestGeneratedBackendEdgeCRUDAndNestedAction(t *testing.T) {

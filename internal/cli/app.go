@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 type appInitResult struct {
@@ -52,7 +52,7 @@ func runAppInit(args []string, stdout io.Writer, stderr io.Writer) int {
 	fs.SetOutput(stderr)
 	outDir := fs.String("out", "", "Output backend directory")
 	moduleName := fs.String("module", "example.com/axle-generated-backend", "Generated backend Go module")
-	axleReplace := fs.String("axle-replace", "../..", "Go replace target for github.com/Fel1xKan/axle")
+	axleReplace := fs.String("axle-replace", "../..", "Go replace target for github.com/cosmo-wise/axle")
 	descriptorsDir := fs.String("descriptors-dir", "", "Directory containing descriptor.axle.json files to seed the scaffold")
 	jsonOut := fs.Bool("json", false, "Render JSON result")
 	if err := fs.Parse(args); err != nil {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 func renderTypes(packageName string, desc axle.Descriptor) string {
@@ -15,7 +15,7 @@ func renderTypes(packageName string, desc axle.Descriptor) string {
 	if len(desc.Resource.Actions) > 0 {
 		b.WriteString("\nimport (\n")
 		b.WriteString("\t\"context\"\n\n")
-		b.WriteString("\taxleruntime \"github.com/Fel1xKan/axle/pkg/axle/runtime\"\n")
+		b.WriteString("\taxleruntime \"github.com/cosmo-wise/axle/pkg/axle/runtime\"\n")
 		b.WriteString(")\n")
 	}
 	b.WriteString("\n")

@@ -12,8 +12,8 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"github.com/Fel1xKan/axle/internal/schema"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/schema"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 // ErrNotFound is returned when a descriptor-backed row does not exist.

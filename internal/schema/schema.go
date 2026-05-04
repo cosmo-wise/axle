@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 var identRE = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]*$`)

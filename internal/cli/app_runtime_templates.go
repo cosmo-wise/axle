@@ -11,8 +11,8 @@ import (
 
 	appcatalog "%s/catalog"
 	resources "%s/descriptors/resources/generated"
-	axleruntime "github.com/Fel1xKan/axle/pkg/axle/runtime"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	axleruntime "github.com/cosmo-wise/axle/pkg/axle/runtime"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 func New(db *axlesqlite.Database) http.Handler {

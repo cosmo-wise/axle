@@ -8,11 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/pkg/axle"
-	axleruntime "github.com/Fel1xKan/axle/pkg/axle/runtime"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/pkg/axle"
+	axleruntime "github.com/cosmo-wise/axle/pkg/axle/runtime"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 func TestRuntimeMountsCatalogCRUDAndNestedAction(t *testing.T) {

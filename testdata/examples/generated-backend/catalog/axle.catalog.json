@@ -1,7 +1,7 @@
 {
   "package": "catalog",
   "resources": [
-    {"alias": "policies", "import": "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/policies/generated"},
-    {"alias": "resources", "import": "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/resources/generated"}
+    {"alias": "policies", "import": "github.com/cosmo-wise/axle/testdata/examples/generated-backend/descriptors/policies/generated"},
+    {"alias": "resources", "import": "github.com/cosmo-wise/axle/testdata/examples/generated-backend/descriptors/resources/generated"}
   ]
 }

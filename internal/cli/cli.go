@@ -7,10 +7,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/Fel1xKan/axle/internal/check"
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/check"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 func Main(args []string, stdout io.Writer, stderr io.Writer) int {

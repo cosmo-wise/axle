@@ -1,13 +1,13 @@
 # Axle generated backend
 
-This backend is a minimal Go/SQLite Axle scaffold for module "github.com/Fel1xKan/axle/testdata/examples/generated-backend".
+This backend is a minimal Go/SQLite Axle scaffold for module "github.com/cosmo-wise/axle/testdata/examples/generated-backend".
 
 ## What Axle owns
 
 - Generated CRUD routes and DTOs under `descriptors/<resource>/generated`.
 - Multi-resource catalog output under `catalog/catalog.gen.go`.
-- SQLite CRUD through `github.com/Fel1xKan/axle/pkg/axle/sqlite`.
-- Optional HTTP edge conveniences through `github.com/Fel1xKan/axle/pkg/axle/runtime.NewEdge`: `/healthz`, `/routes`, CORS, and `/api/v1` prefix normalization.
+- SQLite CRUD through `github.com/cosmo-wise/axle/pkg/axle/sqlite`.
+- Optional HTTP edge conveniences through `github.com/cosmo-wise/axle/pkg/axle/runtime.NewEdge`: `/healthz`, `/routes`, CORS, and `/api/v1` prefix normalization.
 
 ## What app code owns
 

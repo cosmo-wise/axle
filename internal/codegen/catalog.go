@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 const CatalogManifestName = "axle.catalog.json"
@@ -81,7 +81,7 @@ func renderCatalog(packageName string, resources []CatalogResource) string {
 	b.WriteString(header)
 	b.WriteString("package " + packageName + "\n\n")
 	b.WriteString("import (\n")
-	b.WriteString("\t\"github.com/Fel1xKan/axle/pkg/axle\"\n")
+	b.WriteString("\t\"github.com/cosmo-wise/axle/pkg/axle\"\n")
 	for _, resource := range resources {
 		b.WriteString(fmt.Sprintf("\t%s %q\n", resource.Alias, resource.ImportPath))
 	}

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	"github.com/cosmo-wise/axle/pkg/axle"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 // ActionRequest is the generic runtime envelope that generated typed adapters unwrap.

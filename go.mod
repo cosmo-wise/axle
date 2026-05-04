@@ -1,4 +1,4 @@
-module github.com/Fel1xKan/axle
+module github.com/cosmo-wise/axle
 
 go 1.24.0
 

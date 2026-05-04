@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/internal/descriptor"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/internal/descriptor"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 func TestRoutesPreserveSemanticsAndNestedParams(t *testing.T) {

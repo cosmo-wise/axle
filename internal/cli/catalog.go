@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/Fel1xKan/axle/internal/codegen"
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/internal/codegen"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 func runCatalog(args []string, stdout io.Writer, stderr io.Writer) int {

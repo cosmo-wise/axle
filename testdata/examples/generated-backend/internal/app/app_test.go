@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	appcatalog "github.com/Fel1xKan/axle/testdata/examples/generated-backend/catalog"
-	"github.com/Fel1xKan/axle/testdata/examples/generated-backend/internal/app"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	appcatalog "github.com/cosmo-wise/axle/testdata/examples/generated-backend/catalog"
+	"github.com/cosmo-wise/axle/testdata/examples/generated-backend/internal/app"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 func TestGeneratedBackendEdgeCRUDAndNestedAction(t *testing.T) {

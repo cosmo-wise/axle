@@ -3,7 +3,7 @@ package openapi
 import (
 	"encoding/json"
 
-	"github.com/Fel1xKan/axle/pkg/axle"
+	"github.com/cosmo-wise/axle/pkg/axle"
 )
 
 type document struct {

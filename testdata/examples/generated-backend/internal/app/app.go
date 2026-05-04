@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	appcatalog "github.com/Fel1xKan/axle/testdata/examples/generated-backend/catalog"
-	resources "github.com/Fel1xKan/axle/testdata/examples/generated-backend/descriptors/resources/generated"
-	axleruntime "github.com/Fel1xKan/axle/pkg/axle/runtime"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	appcatalog "github.com/cosmo-wise/axle/testdata/examples/generated-backend/catalog"
+	resources "github.com/cosmo-wise/axle/testdata/examples/generated-backend/descriptors/resources/generated"
+	axleruntime "github.com/cosmo-wise/axle/pkg/axle/runtime"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 func New(db *axlesqlite.Database) http.Handler {

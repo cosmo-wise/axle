@@ -3,7 +3,7 @@ package cli
 import "fmt"
 
 func renderAppGoMod(moduleName string, axleReplace string) string {
-	return fmt.Sprintf("module %s\n\ngo 1.24.0\n\nrequire github.com/Fel1xKan/axle v0.0.0\n\nreplace github.com/Fel1xKan/axle => %s\n", moduleName, axleReplace)
+	return fmt.Sprintf("module %s\n\ngo 1.24.0\n\nrequire github.com/cosmo-wise/axle v0.0.0\n\nreplace github.com/cosmo-wise/axle => %s\n", moduleName, axleReplace)
 }
 
 func renderVerifyScript() string {
@@ -11,7 +11,7 @@ func renderVerifyScript() string {
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-AXLE=${AXLE:-"go run github.com/Fel1xKan/axle/cmd/axle"}
+AXLE=${AXLE:-"go run github.com/cosmo-wise/axle/cmd/axle"}
 mapfile -t DESCRIPTORS < <(find descriptors -mindepth 2 -maxdepth 2 -name descriptor.axle.json | sort)
 if [ "${#DESCRIPTORS[@]}" -lt 1 ]; then
   echo "expected at least one Axle descriptor" >&2
@@ -51,7 +51,7 @@ import (
 
 	appcatalog "%s/catalog"
 	"%s/internal/app"
-	axlesqlite "github.com/Fel1xKan/axle/pkg/axle/sqlite"
+	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
 )
 
 func main() {
@@ -119,8 +119,8 @@ Do not handwrite standard CRUD routers, repositories, query builders, generic DB
 `, moduleName,
 		"`descriptors/<resource>/generated`",
 		"`catalog/catalog.gen.go`",
-		"`github.com/Fel1xKan/axle/pkg/axle/sqlite`",
-		"`github.com/Fel1xKan/axle/pkg/axle/runtime.NewEdge`",
+		"`github.com/cosmo-wise/axle/pkg/axle/sqlite`",
+		"`github.com/cosmo-wise/axle/pkg/axle/runtime.NewEdge`",
 		"`/healthz`",
 		"`/routes`",
 		"`/api/v1`",

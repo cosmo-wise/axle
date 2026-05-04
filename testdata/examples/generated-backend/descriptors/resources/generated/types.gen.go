@@ -4,7 +4,7 @@ package generated
 import (
 	"context"
 
-	axleruntime "github.com/Fel1xKan/axle/pkg/axle/runtime"
+	axleruntime "github.com/cosmo-wise/axle/pkg/axle/runtime"
 )
 
 type Resource struct {

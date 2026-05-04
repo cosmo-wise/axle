@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/Fel1xKan/axle/internal/check"
+	"github.com/cosmo-wise/axle/internal/check"
 )
 
 func TestCheckPositiveFixture(t *testing.T) {

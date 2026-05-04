@@ -1,8 +1,8 @@
-module github.com/Fel1xKan/axle/testdata/examples/generated-backend
+module github.com/cosmo-wise/axle/testdata/examples/generated-backend
 
 go 1.24.0
 
-require github.com/Fel1xKan/axle v0.0.0
+require github.com/cosmo-wise/axle v0.0.0
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -18,4 +18,4 @@ require (
 	modernc.org/sqlite v1.40.1 // indirect
 )
 
-replace github.com/Fel1xKan/axle => ../../..
+replace github.com/cosmo-wise/axle => ../../..
