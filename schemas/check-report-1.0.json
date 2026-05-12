@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Axle Check Report",
+  "type": "object",
+  "required": ["version", "timestamp", "checks"],
+  "properties": {
+    "version": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "checkType", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "checkType": { "type": "string", "enum": ["schema", "migration", "runtime"] },
+          "status": { "type": "string", "enum": ["pass", "fail", "warn", "drift"] },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total": { "type": "integer" },
+        "pass": { "type": "integer" },
+        "fail": { "type": "integer" },
+        "warn": { "type": "integer" },
+        "drift": { "type": "integer" }
+      }
+    }
+  }
+}
