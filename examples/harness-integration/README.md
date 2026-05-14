@@ -26,11 +26,46 @@ for automated backend generation.
       { "name": "done", "type": "text", "mutable": true }
     ],
     "operations": [
-      { "name": "ListTasks", "kind": "list", "request": "ListTasksRequest", "response": "ListTasksResponse", "policy": "task.read", "handler": "ListTasks" },
-      { "name": "GetTask", "kind": "get", "request": "GetTaskRequest", "response": "GetTaskResponse", "policy": "task.read", "handler": "GetTask" },
-      { "name": "CreateTask", "kind": "create", "request": "CreateTaskRequest", "response": "CreateTaskResponse", "policy": "task.write", "handler": "CreateTask" },
-      { "name": "UpdateTask", "kind": "update", "request": "UpdateTaskRequest", "response": "UpdateTaskResponse", "policy": "task.write", "handler": "UpdateTask" },
-      { "name": "DeleteTask", "kind": "delete", "request": "DeleteTaskRequest", "response": "DeleteTaskResponse", "policy": "task.write", "handler": "DeleteTask" }
+      {
+        "name": "ListTasks",
+        "kind": "list",
+        "request": "ListTasksRequest",
+        "response": "ListTasksResponse",
+        "policy": "task.read",
+        "handler": "ListTasks"
+      },
+      {
+        "name": "GetTask",
+        "kind": "get",
+        "request": "GetTaskRequest",
+        "response": "GetTaskResponse",
+        "policy": "task.read",
+        "handler": "GetTask"
+      },
+      {
+        "name": "CreateTask",
+        "kind": "create",
+        "request": "CreateTaskRequest",
+        "response": "CreateTaskResponse",
+        "policy": "task.write",
+        "handler": "CreateTask"
+      },
+      {
+        "name": "UpdateTask",
+        "kind": "update",
+        "request": "UpdateTaskRequest",
+        "response": "UpdateTaskResponse",
+        "policy": "task.write",
+        "handler": "UpdateTask"
+      },
+      {
+        "name": "DeleteTask",
+        "kind": "delete",
+        "request": "DeleteTaskRequest",
+        "response": "DeleteTaskResponse",
+        "policy": "task.write",
+        "handler": "DeleteTask"
+      }
     ]
   },
   "generated": {
