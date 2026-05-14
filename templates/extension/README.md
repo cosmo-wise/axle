@@ -1,15 +1,16 @@
 # Template Extension Interface
 
-Custom templates can be injected by placing Go `text/template` files
-in a `templates/` directory within the project using Axle.
+Axle code generation templates are compiled into Go code (`internal/cli/app_templates.go`)
+and are not currently extensible through external template files.
 
-## Extension Contract
+To customize generated output:
 
-Each custom template must define:
-- `{{define "type"}}` — the type definition block
-- `{{define "routes"}}` — the HTTP route registration block
-- `{{define "handler"}}` — the handler function block
+1. Edit the descriptor and regenerate with `axle gen`.
+2. For custom action handlers, implement them in the app's `internal/app/app.go`
+   and bind them with generated `Handler<Action>` constants and `Bind<Action>` helpers.
+3. For structural changes to generation output, edit the Go template functions
+   in `internal/cli/app_templates.go` within the Axle repository.
 
-## Example
-
-See `examples/` for sample custom template implementations.
+Axle's template architecture is intentionally kept in Go code to ensure
+deterministic, testable generation output. This avoids the drift and fragility
+of external template injection.
