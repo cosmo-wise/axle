@@ -5,15 +5,20 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Go-1.24-00ADD8?logo=go" alt="Go 1.24">
-  <img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="Apache 2.0">
+
+[![Go][go-shield]][go-url]
+[![Version][version-shield]][version-url]
+[![License][license-shield]][license-url]
+[![Build][build-shield]][build-url]
+
 </p>
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#install">Install</a> &middot;
   <a href="#usage">Usage</a> &middot;
-  <a href="docs/workflows/create-backend.md">Docs</a>
+  <a href="docs/workflows/create-backend.md">Docs</a> &middot;
+  <a href="README-CN.md">🇨🇳 中文版</a>
 </p>
 
 ---
@@ -174,3 +179,13 @@ Contributions are welcome. Open an issue or pull request on [GitHub](https://git
 ## License
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
+
+<!-- Badge reference links -->
+[go-shield]: https://img.shields.io/badge/Go-1.24-00ADD8?logo=go
+[go-url]: https://go.dev
+[version-shield]: https://img.shields.io/badge/version-0.1.0-blue
+[version-url]: https://github.com/cosmo-wise/axle/releases
+[license-shield]: https://img.shields.io/badge/license-Apache%202.0-blue
+[license-url]: https://github.com/cosmo-wise/axle/blob/main/LICENSE
+[build-shield]: https://img.shields.io/badge/build-passing-brightgreen
+[build-url]: #
