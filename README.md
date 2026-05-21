@@ -1,191 +1,157 @@
-<h1 align="center">Axle</h1>
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/logo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset=".github/logo-light.svg">
+    <img alt="Axle" src=".github/logo-light.svg" width="440">
+  </picture>
 
-<p align="center">
-  A descriptor-driven CRUD framework for LLM-maintained Go backends
-</p>
+  <p>从资源描述符稳定生成 Go + SQLite CRUD 后端，并在 AI 反复改写前用架构检查拦住漂移。</p>
+</div>
 
-<p align="center">
+<div align="center">
 
 [![Go][go-shield]][go-url]
 [![Version][version-shield]][version-url]
+[![SQLite][sqlite-shield]][sqlite-url]
 [![License][license-shield]][license-url]
-[![Build][build-shield]][build-url]
 
-</p>
+</div>
 
-<p align="center">
+<div align="center">
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#install">Install</a> &middot;
   <a href="#usage">Usage</a> &middot;
-  <a href="docs/workflows/create-backend.md">Docs</a> &middot;
-  <a href="README-CN.md">🇨🇳 中文版</a>
-</p>
+  <a href="#workflows">Workflows</a> &middot;
+  <a href="README-CN.md">README-CN</a>
+</div>
 
 ---
 
-## The Problem
+## Why Axle
 
-Writing and maintaining CRUD backend code is repetitive boilerplate. When an LLM generates it from scratch each time, the output drifts — different route patterns, inconsistent payload shapes, bespoke SQLite wiring, missing migrations. The backend diverges from the frontend contract, and every regeneration risks introducing subtle breakage.
+AI 辅助维护的 CRUD 后端最容易在“再生成一次”之后开始漂移：路由风格变了、字段约束丢了、SQLite 连接被重新包了一层、迁移和 OpenAPI 也不再一致。最后前后端契约并没有变清晰，反而更难守住。
 
-Axle solves this with a descriptor-first approach: define your resources in JSON, generate deterministic Go code, mount the result as an HTTP handler, and let `axle check` catch drift before it reaches production.
+Axle 用 descriptor-first 的方式把资源模型前置成 JSON 描述符，再稳定生成 Go 代码、SQL 迁移和 HTTP 路由，并用 `axle check` 把常见的架构回退挡在外面。
+
+如果你已经确定资源模型，想让 Go/SQLite 后端可以被稳定再生成而不失控，Axle 适合进入那条链路。
+
+如果你需要的是多数据库抽象、ORM、管理后台生成或运行时反射注册，这不是它的目标。
 
 ## Features
 
-- **Descriptor-first generation** — Define fields, CRUD operations, and custom actions in JSON. Axle generates Go types, route metadata, registries, OpenAPI specs, and SQL migrations from a single descriptor.
-- **Multi-resource catalogs** — Combine any number of resource descriptors into a unified catalog with a simple JSON manifest. The catalog mounts every resource behind a single HTTP handler.
-- **Concrete SQLite CRUD** — No ORM, no query builder, no database abstraction. A single pure-Go SQLite facade handles list, get, create, update, and delete for every generated resource.
-- **Deterministic, untouchable output** — Generated files carry `DO NOT EDIT` headers and are byte-identical across identical descriptors. No reflection, no runtime directory scanning, no registration magic.
-- **Architecture anti-bloat checks** — `axle check` rejects handwritten CRUD routes, generic database wrappers, typed repositories, reflection discovery, and public API bloat — the patterns LLMs reach for by default.
-- **Backend scaffolding** — `axle app init` produces a complete, verified Go backend skeleton with generated CRUD, migrations, verify script, and a clear ownership split between Axle-owned generated code and app-owned handlers.
-- **Edge runtime conveniences** — The optional `NewEdge` wrapper adds `/healthz`, `/routes`, CORS, and API prefix normalization without hand-written route switches.
+- **描述符驱动生成**：从一个资源描述符同时生成类型、路由、注册表、OpenAPI 和迁移 SQL。
+- **多资源目录编排**：用 catalog manifest 把多个资源打包到同一后端注册表和 HTTP handler。
+- **纯 Go SQLite CRUD**：直接面向 SQLite，不引入 ORM、仓储层或泛化数据库抽象。
+- **确定性生成产物**：相同描述符得到相同输出，生成文件明确标注 `DO NOT EDIT`。
+- **架构反漂移检查**：`axle check` 专门拦截手写 CRUD、反射发现、抽象过度和生成物陈旧。
+- **后端骨架初始化**：`axle app init` 可直接生成一套可验证的后端骨架和校验脚本。
+- **运行时挂载便利**：`runtime.New` / `NewEdge` 负责路由挂载、健康检查和 API 前缀规范化。
 
-## When to Use
+## When To Use
 
-Reach for Axle when you need a Go/SQLite CRUD backend maintained through AI-assisted regeneration. Use after you've defined your resource model, not during initial prototyping.
-
-**Not for:** Multi-database support, admin UI generation, typed ORM layers, reflection-based registration, or runtime directory scanning. Axle V1 is deliberately scoped to single-process SQLite backends with descriptor-driven generation.
+| 场景 | 推荐命令 |
+|------|------|
+| 初始化一个新后端骨架 | `axle app init` |
+| 基于描述符生成资源代码 | `axle gen` |
+| 组合多个资源为 catalog | `axle catalog gen` |
+| 检查架构是否漂移 | `axle check` |
+| 验证本地 Go / SQLite 环境 | `axle doctor` |
 
 ## Quick Start
 
 ```bash
-# Create a new backend skeleton
-go run github.com/cosmo-wise/axle/cmd/axle app init \
-  --out /tmp/axle-backend \
-  --module example.com/axle-backend \
-  --axle-replace /path/to/axle
-
-# Verify it works
+git clone git@github.com:cosmo-wise/axle.git
+cd axle
+go run ./cmd/axle app init --out /tmp/axle-backend --module example.com/axle-backend --axle-replace "$(pwd)"
 cd /tmp/axle-backend && ./scripts/verify.sh
 ```
 
 ## Install
 
 ```bash
-go install github.com/cosmo-wise/axle/cmd/axle@latest
+git clone git@github.com:cosmo-wise/axle.git
+cd axle
+go install ./cmd/axle
 ```
 
-Requires Go 1.24+. No runtime dependencies beyond a pure-Go SQLite build.
+Requires Go 1.24+.
 
 ## Usage
 
-### Core loop
-
-Define a resource in `descriptors/tasks/descriptor.axle.json`, then generate:
+### Generate a resource
 
 ```bash
 axle gen --descriptor descriptors/tasks/descriptor.axle.json --out descriptors/tasks/generated
 ```
 
-The output includes `types.gen.go`, `routes.gen.go`, `registry.gen.go`, `openapi.gen.json`, and migration SQL.
-
-Check generated output without writing:
+Check without writing:
 
 ```bash
 axle gen --descriptor descriptors/tasks/descriptor.axle.json --out descriptors/tasks/generated --check --json
 ```
 
-### Multi-resource catalog
-
-For apps with two or more resources, create `catalog/axle.catalog.json`:
-
-```json
-{
-  "package": "catalog",
-  "resources": [
-    {"alias": "plans", "import": "example.com/app/descriptors/plans/generated"},
-    {"alias": "tasks", "import": "example.com/app/descriptors/tasks/generated"}
-  ]
-}
-```
+### Build a multi-resource catalog
 
 ```bash
 axle catalog gen --manifest catalog/axle.catalog.json --out catalog
 ```
 
-### Mount as HTTP server
+### Mount the generated backend
 
 ```go
 db, _ := axlesqlite.Open(ctx, ":memory:", appcatalog.Catalog)
 db.Migrate(ctx)
-handler := axleruntime.New(appcatalog.Catalog, db, axleruntime.ActionHandlers{
-    resources.HandlerRenameResource: resources.BindRenameResource(renameResource),
-})
-```
-
-Or with edge conveniences:
-
-```go
-handler := axleruntime.NewEdge(appcatalog.Catalog, db, handlers, axleruntime.EdgeOptions{
-    Name:      "Task backend",
-    APIPrefix: "/api/v1",
-    CORS:      true,
-})
+handler := axleruntime.New(appcatalog.Catalog, db, axleruntime.ActionHandlers{})
 ```
 
 ### Run architecture checks
 
 ```bash
 axle check --root . --json
-```
-
-This rejects handwritten CRUD routing, database abstractions, reflection, stale generated files, and other common LLM drift patterns.
-
-### Verify readiness
-
-```bash
 axle doctor --json
 ```
-
-Reports Go binary availability and SQLite runtime health.
 
 ## Project Boundaries
 
 - `cmd/axle` — thin CLI edge
-- `internal/*` — descriptor parsing, code generation, OpenAPI, checks, SQLite internals
-- `pkg/axle` — metadata-only public contracts (Descriptor, Catalog, ResourceRegistry)
-- `pkg/axle/runtime` — HTTP mount for generated catalogs
+- `internal/*` — descriptor parsing, code generation, checks, SQLite internals
+- `pkg/axle` — public metadata contracts
+- `pkg/axle/runtime` — HTTP mount layer for generated catalogs
 - `pkg/axle/sqlite` — concrete SQLite CRUD facade
 
 Generated files carry `Code generated by axle gen; DO NOT EDIT.` Change descriptors or catalog manifests, then regenerate.
 
----
-
 ## How It Works
 
-Axle reads a JSON resource descriptor, parses it against a versioned schema, then deterministically generates Go source files, an OpenAPI spec, and SQL migration. Generated types include resource DTOs, CRUD DTOs, typed action binders, and route metadata. A catalog manifest combines multiple generated packages into one registry. The runtime matches incoming HTTP requests against catalog route metadata and dispatches to the SQLite facade or to registered custom action handlers.
-
-→ [Architecture deep dive](docs/workflows/create-backend.md)
+Axle parses a versioned JSON descriptor, generates a deterministic resource package, then mounts generated metadata into a runtime that can serve HTTP CRUD routes against SQLite. The same metadata also drives OpenAPI output and drift checks, so generation and verification stay aligned.
 
 ## Workflows
 
-Axle ships with workflow guides for common operations:
-
-- [Create a new backend](docs/workflows/create-backend.md) — full walkthrough from `app init` to running server
-- [Add a resource](docs/workflows/add-resource.md) — incremental resource addition to an existing backend
-- [Add a custom action](docs/workflows/add-action.md) — adding typed custom action handlers
-- [Adapt an existing project](docs/workflows/adapt-existing-project.md) — adding Axle to an existing codebase
-- [Regenerate and check](docs/workflows/regenerate-and-check.md) — the standard verify loop
-- [Fix a check error](docs/workflows/fix-check-error.md) — resolving common `axle check` failures
-- [Harness integration](docs/workflows/harness-integration.md) — wiring Axle into Chariot's test harness
+- [Create a new backend](docs/workflows/create-backend.md)
+- [Add a resource](docs/workflows/add-resource.md)
+- [Add a custom action](docs/workflows/add-action.md)
+- [Adapt an existing project](docs/workflows/adapt-existing-project.md)
+- [Regenerate and check](docs/workflows/regenerate-and-check.md)
+- [Fix a check error](docs/workflows/fix-check-error.md)
+- [Harness integration](docs/workflows/harness-integration.md)
 
 ## Deployment
 
-Axle backends are standard Go binaries. Build with `go build` and deploy as a single binary. The SQLite database file path is specified at runtime — there is no embedded server or external database process.
+Axle backends build as ordinary Go binaries. Build with `go build` and deploy as a single process with a runtime-configured SQLite file path.
 
 ## Contributing
 
-Contributions are welcome. Open an issue or pull request on [GitHub](https://github.com/cosmo-wise/axle).
+Contributions are welcome. Open an issue or pull request on GitHub.
 
 ## License
 
-Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
 
-<!-- Badge reference links -->
-[go-shield]: https://img.shields.io/badge/Go-1.24-00ADD8?logo=go
-[go-url]: https://go.dev
-[version-shield]: https://img.shields.io/badge/version-0.1.0-blue
-[version-url]: https://github.com/cosmo-wise/axle/releases
-[license-shield]: https://img.shields.io/badge/license-Apache%202.0-blue
-[license-url]: https://github.com/cosmo-wise/axle/blob/main/LICENSE
-[build-shield]: https://img.shields.io/badge/build-passing-brightgreen
-[build-url]: #
+[go-shield]: https://img.shields.io/badge/go-1.24-00ADD8?logo=go&logoColor=white
+[go-url]: https://go.dev/
+[version-shield]: https://img.shields.io/badge/version-0.1.0-2563EB
+[version-url]: ./go.mod
+[sqlite-shield]: https://img.shields.io/badge/sqlite-modernc-0F766E
+[sqlite-url]: https://pkg.go.dev/modernc.org/sqlite
+[license-shield]: https://img.shields.io/badge/license-Apache%202.0-1D4ED8
+[license-url]: ./LICENSE

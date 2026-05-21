@@ -1,0 +1,14 @@
+description: >
+  Descriptor-driven Go and SQLite CRUD generator with deterministic output,
+  runtime mounting, and drift checks for AI-maintained backends.
+topics:
+  - go
+  - sqlite
+  - code-generation
+  - crud
+  - backend
+  - openapi
+  - developer-tools
+  - automation
+  - api
+homepage: ""
