@@ -9,6 +9,15 @@ import (
 )
 
 func (s Store) Migrate(ctx context.Context) error {
+	// Create version tracking table
+	if _, err := s.db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS _axle_migrations (
+		version INTEGER PRIMARY KEY,
+		name TEXT NOT NULL,
+		applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`); err != nil {
+		return err
+	}
+
 	table, err := schema.QuoteIdent(s.resource.Table)
 	if err != nil {
 		return err

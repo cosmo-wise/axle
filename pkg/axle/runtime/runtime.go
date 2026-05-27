@@ -2,11 +2,13 @@ package runtime
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/cosmo-wise/axle/pkg/axle"
 	axlesqlite "github.com/cosmo-wise/axle/pkg/axle/sqlite"
@@ -199,4 +201,13 @@ func uniqueStrings(values []string) []string {
 		out = append(out, value)
 	}
 	return out
+}
+
+// SetSyncHeaders adds ETag and Last-Modified response headers for sync protocol support.
+// The ETag is a SHA256 hash of the JSON body, enabling conditional requests (If-None-Match).
+func SetSyncHeaders(w http.ResponseWriter, body []byte) {
+	hash := fmt.Sprintf("%x", sha256.Sum256(body))
+	w.Header().Set("ETag", fmt.Sprintf(`"%s"`, hash[:16]))
+	w.Header().Set("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
+	w.Header().Set("Cache-Control", "no-cache")
 }

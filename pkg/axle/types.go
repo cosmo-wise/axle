@@ -18,6 +18,7 @@ type ResourceDescriptor struct {
 	Path       string                `json:"path"`
 	Table      string                `json:"table"`
 	ID         string                `json:"id"`
+	OwnerField string                `json:"ownerField,omitempty"`
 	Fields     []FieldDescriptor     `json:"fields"`
 	Operations []OperationDescriptor `json:"operations"`
 	Actions    []OperationDescriptor `json:"actions,omitempty"`
