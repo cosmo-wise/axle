@@ -32,20 +32,12 @@ func declaresManualCRUDRouting(file *ast.File, imports []string) bool {
 	}
 	found := false
 	ast.Inspect(file, func(node ast.Node) bool {
-		switch item := node.(type) {
-		case *ast.BasicLit:
-			if item.Kind != token.STRING {
-				return true
-			}
-			value := strings.Trim(item.Value, "`\"")
-			if isManualCRUDRouteLiteral(value) || value == "PATCH" || value == "DELETE" {
-				found = true
-			}
-		case *ast.SelectorExpr:
-			ident, ok := item.X.(*ast.Ident)
-			if ok && ident.Name == "http" && (item.Sel.Name == "MethodPatch" || item.Sel.Name == "MethodDelete") {
-				found = true
-			}
+		item, ok := node.(*ast.BasicLit)
+		if !ok || item.Kind != token.STRING {
+			return true
+		}
+		if isManualCRUDRouteLiteral(strings.Trim(item.Value, "`\"")) {
+			found = true
 		}
 		return !found
 	})
@@ -69,9 +61,9 @@ func isManualCRUDRouteLiteral(value string) bool {
 		return false
 	}
 	for _, part := range parts[:len(parts)-1] {
-		if strings.HasPrefix(part, "{") && strings.HasSuffix(part, "}") {
+		if part == "{id}" {
 			return true
 		}
 	}
-	return true
+	return false
 }
