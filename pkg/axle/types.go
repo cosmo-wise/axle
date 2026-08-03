@@ -78,6 +78,8 @@ type ResourceRegistry struct {
 
 // Catalog is a deterministic multi-resource registry generated or assembled by Axle.
 type Catalog struct {
+	Component string             `json:"component,omitempty"`
+	Version   int                `json:"version,omitempty"`
 	Resources []ResourceRegistry `json:"resources"`
 }
 

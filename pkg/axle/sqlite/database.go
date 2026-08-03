@@ -23,23 +23,25 @@ type Record map[string]any
 // abstraction: callers pass a generated Catalog and use descriptor resource names
 // or paths to address CRUD operations.
 type Database struct {
-	db       *sql.DB
-	catalog  axle.Catalog
-	stores   map[string]internalsqlite.Store
-	resource map[string]axle.ResourceDescriptor
+	db          *sql.DB
+	migrationDB *sql.DB
+	catalog     axle.Catalog
+	stores      map[string]internalsqlite.Store
+	resource    map[string]axle.ResourceDescriptor
 }
 
 // Open creates a SQLite CRUD facade from a generated catalog.
 func Open(ctx context.Context, dsn string, catalog axle.Catalog) (*Database, error) {
-	db, err := internalsqlite.Open(dsn)
+	db, migrationDB, err := internalsqlite.OpenDatabaseHandles(dsn)
 	if err != nil {
 		return nil, err
 	}
 	facade := &Database{
-		db:       db,
-		catalog:  catalog,
-		stores:   map[string]internalsqlite.Store{},
-		resource: map[string]axle.ResourceDescriptor{},
+		db:          db,
+		migrationDB: migrationDB,
+		catalog:     catalog,
+		stores:      map[string]internalsqlite.Store{},
+		resource:    map[string]axle.ResourceDescriptor{},
 	}
 	for _, registry := range catalog.Resources {
 		res := registry.Resource
@@ -51,14 +53,22 @@ func Open(ctx context.Context, dsn string, catalog axle.Catalog) (*Database, err
 		}
 	}
 	if err := ctx.Err(); err != nil {
-		_ = db.Close()
+		_ = facade.Close()
 		return nil, err
 	}
 	return facade, nil
 }
 
 // Close closes the underlying SQLite handle.
-func (d *Database) Close() error { return d.db.Close() }
+func (d *Database) Close() error {
+	if d.migrationDB != nil && d.migrationDB != d.db {
+		if err := d.migrationDB.Close(); err != nil {
+			_ = d.db.Close()
+			return err
+		}
+	}
+	return d.db.Close()
+}
 
 // SQLDB returns the concrete database/sql handle for tests and migrations that
 // need SQLite-specific escape hatches. It is not a driver-neutral abstraction.
@@ -67,21 +77,10 @@ func (d *Database) SQLDB() *sql.DB { return d.db }
 // Catalog returns the generated catalog used to construct this facade.
 func (d *Database) Catalog() axle.Catalog { return d.catalog }
 
-// Migrate creates all catalog tables if they do not exist.
+// Migrate applies the versioned migration set represented by the catalog.
+// It remains source-compatible with existing Axle consumers.
 func (d *Database) Migrate(ctx context.Context) error {
-	seen := map[string]bool{}
-	for _, registry := range d.catalog.Resources {
-		key := normalizeResourceKey(registry.Resource.Path)
-		if seen[key] {
-			continue
-		}
-		seen[key] = true
-		store := internalsqlite.NewStore(d.db, registry.Resource)
-		if err := store.Migrate(ctx); err != nil {
-			return err
-		}
-	}
-	return nil
+	return d.ApplyMigrations(ctx, CatalogSet(d.catalog))
 }
 
 // Resource returns descriptor metadata for a generated resource key.
@@ -150,6 +149,20 @@ func (d *Database) Update(ctx context.Context, resource string, id any, values R
 		return nil, err
 	}
 	if err := store.Update(ctx, id, map[string]any(values)); err != nil {
+		return nil, err
+	}
+	return d.Get(ctx, resource, id)
+}
+
+// UpdateInternal patches declared fields without applying the client-facing
+// mutable allowlist. It is for trusted application state transitions only;
+// handlers must never pass client-controlled maps to this method.
+func (d *Database) UpdateInternal(ctx context.Context, resource string, id any, values Record) (Record, error) {
+	store, err := d.store(resource)
+	if err != nil {
+		return nil, err
+	}
+	if err := store.UpdateInternal(ctx, id, map[string]any(values)); err != nil {
 		return nil, err
 	}
 	return d.Get(ctx, resource, id)

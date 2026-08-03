@@ -7,7 +7,9 @@ import (
 	resources "github.com/cosmo-wise/axle/testdata/examples/generated-backend/descriptors/resources/generated"
 )
 
-var Catalog = axle.Catalog{Resources: []axle.ResourceRegistry{
-	policies.ResourceRegistry,
-	resources.ResourceRegistry,
-}}
+var Catalog = axle.Catalog{
+	Resources: []axle.ResourceRegistry{
+		policies.ResourceRegistry,
+		resources.ResourceRegistry,
+	},
+}

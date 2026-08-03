@@ -30,6 +30,14 @@ func (s Store) createValues(values map[string]any) (map[string]any, error) {
 }
 
 func (s Store) updateValues(values map[string]any) (map[string]any, error) {
+	return s.knownValues(values, true)
+}
+
+func (s Store) internalUpdateValues(values map[string]any) (map[string]any, error) {
+	return s.knownValues(values, false)
+}
+
+func (s Store) knownValues(values map[string]any, mutableOnly bool) (map[string]any, error) {
 	fields := s.fieldsByName()
 	filtered := map[string]any{}
 	for key, value := range values {
@@ -37,7 +45,7 @@ func (s Store) updateValues(values map[string]any) (map[string]any, error) {
 		if !ok {
 			return nil, fmt.Errorf("%w: %s", ErrUnknownField, key)
 		}
-		if !field.Mutable {
+		if mutableOnly && !field.Mutable {
 			return nil, fmt.Errorf("%w: %s", ErrImmutableField, key)
 		}
 		filtered[key] = value

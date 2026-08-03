@@ -80,6 +80,17 @@ func (s Store) Get(ctx context.Context, id any) (map[string]any, error) {
 
 func (s Store) Update(ctx context.Context, id any, values map[string]any) error {
 	filtered, err := s.updateValues(values)
+	return s.update(ctx, id, filtered, err)
+}
+
+// UpdateInternal updates any declared field. Callers must only pass trusted
+// application state, never a request body or other client-controlled map.
+func (s Store) UpdateInternal(ctx context.Context, id any, values map[string]any) error {
+	filtered, err := s.internalUpdateValues(values)
+	return s.update(ctx, id, filtered, err)
+}
+
+func (s Store) update(ctx context.Context, id any, filtered map[string]any, err error) error {
 	if err != nil {
 		return err
 	}

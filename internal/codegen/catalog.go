@@ -14,6 +14,8 @@ const CatalogManifestName = "axle.catalog.json"
 
 // CatalogDescriptor describes a deterministic multi-resource generated catalog.
 type CatalogDescriptor struct {
+	Component string            `json:"component,omitempty"`
+	Version   int               `json:"version,omitempty"`
 	Package   string            `json:"package"`
 	Resources []CatalogResource `json:"resources"`
 }
@@ -46,7 +48,7 @@ func GenerateCatalog(desc CatalogDescriptor) ([]GeneratedFile, []axle.Diagnostic
 	sort.SliceStable(resources, func(i, j int) bool {
 		return resources[i].Alias+resources[i].ImportPath < resources[j].Alias+resources[j].ImportPath
 	})
-	return []GeneratedFile{{Path: "catalog.gen.go", Content: formatGo(renderCatalog(desc.Package, resources))}}, nil
+	return []GeneratedFile{{Path: "catalog.gen.go", Content: formatGo(renderCatalog(desc, resources))}}, nil
 }
 
 func validateCatalog(desc CatalogDescriptor, path string) []axle.Diagnostic {
@@ -56,6 +58,12 @@ func validateCatalog(desc CatalogDescriptor, path string) []axle.Diagnostic {
 	}
 	if strings.TrimSpace(desc.Package) == "" {
 		add("AXLE_CATALOG_PACKAGE", "#/package", "catalog package is required", "Set package, for example catalog.")
+	}
+	if (strings.TrimSpace(desc.Component) == "") != (desc.Version == 0) {
+		add("AXLE_CATALOG_VERSION", "#/component", "catalog component and version must be declared together", "Set both component and a positive version, or omit both for a legacy catalog.")
+	}
+	if desc.Version < 0 {
+		add("AXLE_CATALOG_VERSION", "#/version", "catalog version cannot be negative", "Use a positive append-only schema version.")
 	}
 	if len(desc.Resources) < 2 {
 		add("AXLE_CATALOG_RESOURCES", "#/resources", "catalog requires at least two generated resources", "Add two or more generated resource imports.")
@@ -76,20 +84,25 @@ func validateCatalog(desc CatalogDescriptor, path string) []axle.Diagnostic {
 	return diagnostics
 }
 
-func renderCatalog(packageName string, resources []CatalogResource) string {
+func renderCatalog(desc CatalogDescriptor, resources []CatalogResource) string {
 	var b strings.Builder
 	b.WriteString(header)
-	b.WriteString("package " + packageName + "\n\n")
+	b.WriteString("package " + desc.Package + "\n\n")
 	b.WriteString("import (\n")
 	b.WriteString("\t\"github.com/cosmo-wise/axle/pkg/axle\"\n")
 	for _, resource := range resources {
 		b.WriteString(fmt.Sprintf("\t%s %q\n", resource.Alias, resource.ImportPath))
 	}
 	b.WriteString(")\n\n")
-	b.WriteString("var Catalog = axle.Catalog{Resources: []axle.ResourceRegistry{\n")
-	for _, resource := range resources {
-		b.WriteString("\t" + resource.Alias + ".ResourceRegistry,\n")
+	b.WriteString("var Catalog = axle.Catalog{\n")
+	if desc.Component != "" {
+		b.WriteString(fmt.Sprintf("\tComponent: %q,\n", desc.Component))
+		b.WriteString(fmt.Sprintf("\tVersion: %d,\n", desc.Version))
 	}
-	b.WriteString("}}\n")
+	b.WriteString("\tResources: []axle.ResourceRegistry{\n")
+	for _, resource := range resources {
+		b.WriteString("\t\t" + resource.Alias + ".ResourceRegistry,\n")
+	}
+	b.WriteString("\t},\n}\n")
 	return b.String()
 }
